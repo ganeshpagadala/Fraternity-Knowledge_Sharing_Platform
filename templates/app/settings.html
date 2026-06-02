@@ -1,0 +1,152 @@
+{% extends "app_shell.html" %}
+{% block title %}Settings · Fraternity{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-hd-title">Settings</h1>
+</div>
+
+<div class="settings-layout">
+  <!-- Nav -->
+  <nav class="settings-nav">
+    <a href="{{ url_for('settings', tab='profile') }}"
+       class="snav-item {% if tab=='profile' %}active{% endif %}">
+      <i class="fas fa-user"></i> Profile
+    </a>
+    <a href="{{ url_for('settings', tab='security') }}"
+       class="snav-item {% if tab=='security' %}active{% endif %}">
+      <i class="fas fa-shield-halved"></i> Security
+    </a>
+  </nav>
+
+  <!-- Panel -->
+  <div class="settings-panel">
+
+    {% if tab == 'profile' %}
+    <h2>Edit Profile</h2>
+    <p class="sp-sub">Update your professional information and appearance.</p>
+
+    <form action="{{ url_for('settings', tab='profile') }}" method="POST"
+          enctype="multipart/form-data" class="settings-form">
+      <input type="hidden" name="action" value="update_profile">
+
+      <!-- Cover + Avatar upload -->
+      <div class="cover-upload-wrap">
+        <div class="cover-prev" id="coverPrev"
+             style="{% if user.cover_pic %}background-image:url('{{ url_for('static',filename=user.cover_pic) }}'){% endif %}">
+          <label class="cover-overlay" for="coverInput">
+            <i class="fas fa-camera"></i> Change Cover
+          </label>
+          <input type="file" id="coverInput" name="cover_pic" accept="image/*" style="display:none"
+                 onchange="previewCover(this)">
+        </div>
+        <div class="av-upload-wrap">
+          <img src="{{ url_for('static', filename=user.profile_pic) }}"
+               onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+               id="avatarPreview" alt="">
+          <label class="av-upload-label" for="avatarInput">
+            <i class="fas fa-camera"></i>
+          </label>
+          <input type="file" id="avatarInput" name="profile_pic" accept="image/*" style="display:none"
+                 onchange="previewAvatar(this)">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:20px">
+        <label>Full Name</label>
+        <input type="text" name="name" class="form-input" value="{{ user.name }}" required>
+      </div>
+      <div class="form-group">
+        <label>Bio</label>
+        <textarea name="bio" class="form-input" rows="3"
+                  placeholder="Tell peers about your professional background…">{{ user.bio or '' }}</textarea>
+      </div>
+      <div class="form-row two-col">
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" name="location_text" class="form-input"
+                 value="{{ user.location_text or '' }}" placeholder="City, Country">
+        </div>
+        <div class="form-group">
+          <label>Website</label>
+          <input type="url" name="website" class="form-input"
+                 value="{{ user.website or '' }}" placeholder="https://…">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Professional Domain</label>
+        <select name="field_category" class="form-input">
+          {% for cat in field_categories %}
+          <option value="{{ cat }}" {% if cat==user.field_category %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn-primary-sm" style="align-self:flex-start">
+        <i class="fas fa-floppy-disk"></i> Save Changes
+      </button>
+    </form>
+
+    {% elif tab == 'security' %}
+    <h2>Security</h2>
+    <p class="sp-sub">Change your password. Use a strong, unique password.</p>
+
+    <form action="{{ url_for('settings', tab='security') }}" method="POST" class="settings-form">
+      <input type="hidden" name="action" value="change_password">
+      <div class="form-group">
+        <label>Current Password</label>
+        <input type="password" name="old_password" class="form-input" placeholder="••••••••" required>
+      </div>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" name="new_password" class="form-input"
+               placeholder="At least 6 characters" minlength="6" required>
+      </div>
+      <div class="form-group">
+        <label>Confirm New Password</label>
+        <input type="password" name="confirm_password" class="form-input"
+               placeholder="Repeat new password" required>
+      </div>
+      <button type="submit" class="btn-primary-sm" style="align-self:flex-start">
+        <i class="fas fa-key"></i> Change Password
+      </button>
+    </form>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:32px 0">
+
+    <h2 style="font-size:16px;color:var(--txt2)">Account Info</h2>
+    <div style="margin-top:12px;border:1px solid var(--border);max-width:460px">
+      <div class="auth-spec-row">
+        <span class="auth-spec-key">Username</span>
+        <span class="auth-spec-val">@{{ user.username }}</span>
+      </div>
+      <div class="auth-spec-row">
+        <span class="auth-spec-key">Email</span>
+        <span class="auth-spec-val">{{ user.email }}</span>
+      </div>
+      <div class="auth-spec-row">
+        <span class="auth-spec-key">Member Since</span>
+        <span class="auth-spec-val">{{ user.created_at.strftime('%B %d, %Y') }}</span>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block right_col %}
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-user-circle"></i> Your Account</div>
+  <div style="padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+    <img src="{{ url_for('static', filename=user.profile_pic) }}"
+         onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+         class="av-lg" alt="">
+    <span style="font-family:var(--font-d);font-size:15px">{{ user.name }}</span>
+    <span style="font-family:var(--font-m);font-size:11px;color:var(--txt3)">@{{ user.username }}</span>
+    <span style="font-family:var(--font-m);font-size:10px;color:var(--gold);opacity:.8">{{ user.field_category }}</span>
+    <a href="{{ url_for('profile', username=user.username) }}" class="btn-outline-sm" style="margin-top:4px">
+      View Profile
+    </a>
+  </div>
+</div>
+{% endblock %}

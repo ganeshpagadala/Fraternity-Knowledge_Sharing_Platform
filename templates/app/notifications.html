@@ -1,0 +1,64 @@
+{% extends "app_shell.html" %}
+{% block title %}Alerts · Fraternity{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-hd-title">Alerts</h1>
+</div>
+
+<div class="notif-feed">
+  {% if notifications %}
+  {% for n in notifications %}
+  <div class="notif-item {% if not n.is_read %}unread{% endif %}">
+    <div class="notif-ico-wrap">
+      <img src="{{ url_for('static', filename=n.from_avatar) }}"
+           onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+           class="av-md" alt="">
+      <div class="notif-type-dot ntype-{{ n.type }}">
+        <i class="fas fa-{% if n.type=='like' %}heart{% elif n.type=='repost' %}retweet{% elif n.type=='follow' %}user-plus{% elif n.type in ('reply','comment') %}comment{% elif n.type=='mention' %}at{% else %}quote-right{% endif %}"></i>
+      </div>
+    </div>
+    <div class="ni-body">
+      <p>
+        <a href="{{ url_for('profile', username=n.from_username) }}">
+          <strong>{{ n.from_name }}</strong>
+        </a>
+        {% if n.type == 'like' %} liked your post
+        {% elif n.type == 'repost' %} reposted your post
+        {% elif n.type == 'follow' %} started following you
+        {% elif n.type == 'reply' %} replied to your post
+        {% elif n.type == 'comment' %} commented on your post
+        {% elif n.type == 'mention' %} mentioned you in a post
+        {% elif n.type == 'quote' %} quoted your post
+        {% endif %}
+      </p>
+      {% if n.post_id %}
+      <a href="{{ url_for('post_detail', post_id=n.post_id) }}"
+         style="font-size:12px;color:var(--txt3);display:block;margin-top:2px">
+        <i class="fas fa-external-link" style="font-size:10px"></i> View post
+      </a>
+      {% endif %}
+      <time>{{ n.created_at | timeago }}</time>
+    </div>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-bell-slash"></i>
+    <h3>No alerts yet</h3>
+    <p>When peers like, reply, or follow you — you'll see it here</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block right_col %}
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-circle-info"></i> About Alerts</div>
+  <div class="about-row"><i class="fas fa-heart" style="color:var(--red)"></i><span>Likes on your posts</span></div>
+  <div class="about-row"><i class="fas fa-retweet" style="color:var(--green)"></i><span>Reposts of your content</span></div>
+  <div class="about-row"><i class="fas fa-user-plus" style="color:var(--gold)"></i><span>New followers</span></div>
+  <div class="about-row"><i class="fas fa-comment" style="color:var(--blue)"></i><span>Replies & comments</span></div>
+  <div class="about-row"><i class="fas fa-at" style="color:var(--green)"></i><span>@Mentions</span></div>
+</div>
+{% endblock %}

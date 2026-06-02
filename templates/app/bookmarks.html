@@ -1,0 +1,31 @@
+{% extends "app_shell.html" %}
+{% from "macros/post_card.html" import render_post %}
+{% block title %}Saved · Fraternity{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-hd-title">Saved Posts</h1>
+  <span style="margin-left:auto;font-family:var(--font-m);font-size:11px;color:var(--txt3)">{{ posts|length }} saved</span>
+</div>
+<div class="post-feed">
+  {% if posts %}
+    {% for post in posts %}{{ render_post(post) }}{% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-bookmark"></i>
+    <h3>No saved posts</h3>
+    <p>Bookmark posts to read them later — they're private and only visible to you</p>
+    <a href="{{ url_for('feed') }}" class="btn-primary-sm">Browse Feed</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block right_col %}
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-circle-info"></i> Saved Posts</div>
+  <div class="about-row"><i class="fas fa-lock"></i><span>Private — only visible to you</span></div>
+  <div class="about-row"><i class="fas fa-bookmark"></i><span>Click bookmark on any post to save</span></div>
+  <div class="about-row"><i class="fas fa-trash"></i><span>Click bookmark again to remove</span></div>
+</div>
+{% endblock %}

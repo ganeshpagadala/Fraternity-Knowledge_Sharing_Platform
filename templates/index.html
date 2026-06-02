@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fraternity — Professional Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-nav">
+    <a href="{{ url_for('login') }}" class="btn-fraternity btn-outline-light">Log In</a>
+    <a href="{{ url_for('signup') }}" class="btn-fraternity btn-solid-light">Register</a>
+  </div>
+  <div class="cover-eyebrow">Product Specification Document</div>
+  <h1>Frater<em>nity</em></h1>
+  <p class="cover-tagline">A gated, subscription-based professional platform built exclusively for statute-certified professionals. No ads. No noise. Just signal.</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><span class="label">Document Type</span><span class="value">Complete Product Spec</span></div>
+    <div class="cover-meta-item"><span class="label">Version</span><span class="value">2.0 Final</span></div>
+    <div class="cover-meta-item"><span class="label">Status</span><span class="value">Ready for Development</span></div>
+    <div class="cover-meta-item"><span class="label">Date</span><span class="value">February 2026</span></div>
+  </div>
+  <div class="cover-scroll">SCROLL ↓</div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc-section">
+  <h2>Contents</h2>
+  <div class="toc-grid">
+    <a class="toc-item" href="#s1"><span class="num">01</span><span class="title">Platform Overview & Philosophy</span></a>
+    <a class="toc-item" href="#s2"><span class="num">02</span><span class="title">Access, Membership & KYC</span></a>
+    <a class="toc-item" href="#s3"><span class="num">03</span><span class="title">Subscription & Pricing</span></a>
+    <a class="toc-item" href="#s4"><span class="num">04</span><span class="title">Platform Availability</span></a>
+    <a class="toc-item" href="#s5"><span class="num">05</span><span class="title">Home Feed & Navigation</span></a>
+    <a class="toc-item" href="#s6"><span class="num">06</span><span class="title">Post Types</span></a>
+    <a class="toc-item" href="#s7"><span class="num">07</span><span class="title">The Boom Mechanism</span></a>
+    <a class="toc-item" href="#s8"><span class="num">08</span><span class="title">Profiles & Expertise</span></a>
+    <a class="toc-item" href="#s9"><span class="num">09</span><span class="title">Communication</span></a>
+    <a class="toc-item" href="#s10"><span class="num">10</span><span class="title">Interface & Navigation</span></a>
+    <a class="toc-item" href="#s11"><span class="num">11</span><span class="title">Governance & Moderation</span></a>
+    <a class="toc-item" href="#s12"><span class="num">12</span><span class="title">What Fraternity Is NOT</span></a>
+    <a class="toc-item" href="#s13"><span class="num">13</span><span class="title">Complete Feature Table</span></a>
+  </div>
+</div>
+
+<div class="body-wrap">
+
+  <!-- 01 OVERVIEW -->
+  <div class="chapter" id="s1">
+    <div class="chapter-num">Chapter 01</div>
+    <h2>Platform Overview & Philosophy</h2>
+    <p class="lead">Fraternity is not a social network. It is a professional commons — a space where serious, verified professionals come with intention, not habit.</p>
+    <div class="section">
+      <span class="section-title">The Problem It Solves</span>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="icon">📢</span><h4>Noise & Clutter</h4><p>Existing platforms are saturated with ads, sponsored content, and irrelevant posts that drown out genuine professional exchange.</p></div>
+        <div class="feature-card"><span class="icon">🎭</span><h4>Performative Behaviour</h4><p>People optimise for visibility and applause rather than knowledge sharing, making discourse shallow and self-promotional.</p></div>
+        <div class="feature-card"><span class="icon">🌐</span><h4>Open to Everyone</h4><p>No verification means low signal-to-noise ratio. Unqualified voices drown out expert ones. Trust is impossible to establish.</p></div>
+        <div class="feature-card"><span class="icon">🤖</span><h4>Algorithmic Manipulation</h4><p>Virality is rewarded over substance. Platforms surface what gets clicks, not what is accurate, useful, or professionally relevant.</p></div>
+      </div>
+    </div>
+    <div class="section">
+      <span class="section-title">Core Philosophy</span>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Professional-First</span><span class="spec-val">Every design decision prioritises professional value over engagement metrics, time-on-site, or virality.</span></div>
+        <div class="spec-row"><span class="spec-key">Verified Entry</span><span class="spec-val">Access is earned by being a certified professional. The platform is not a public square — it is a members' room.</span></div>
+        <div class="spec-row"><span class="spec-key">Subscription Model</span><span class="spec-val">The subscription is not just revenue. It is a commitment filter. It removes casual, bad-faith, and low-intent participants.</span></div>
+        <div class="spec-row"><span class="spec-key">No Ads — Ever</span><span class="spec-val">There will never be ads, sponsored content, promoted posts, or any form of paid visibility. Revenue is entirely user subscriptions.</span></div>
+        <div class="spec-row"><span class="spec-key">Author-Controlled Reach</span><span class="spec-val">Content distribution is controlled by the author, not an algorithm. Reach is earned through genuine attention.</span></div>
+        <div class="spec-row"><span class="spec-key">Intentional Design</span><span class="spec-val">Every feature must serve professional purpose. No dark patterns, no addictive loops, no infinite scroll tricks.</span></div>
+      </div>
+    </div>
+    <div class="section">
+      <span class="section-title">Target Users</span>
+      <p>Fraternity is exclusively for professionals certified by <strong>statutory institutes via formal examinations</strong>.</p>
+      <div class="feature-grid">
+        <div class="feature-card"><span class="icon">📊</span><h4>Chartered Accountants</h4><p>ICAI-certified CAs at all stages.</p></div>
+        <div class="feature-card"><span class="icon">⚖️</span><h4>Lawyers</h4><p>LLB/LLM degree holders enrolled with Bar Councils.</p></div>
+        <div class="feature-card"><span class="icon">🩺</span><h4>Medical Professionals</h4><p>MBBS, MD, MS, BDS degree holders registered with MCI/NMC.</p></div>
+        <div class="feature-card"><span class="icon">⚙️</span><h4>Engineers</h4><p>B.Tech/B.E. graduates in all disciplines.</p></div>
+        <div class="feature-card"><span class="icon">🏛️</span><h4>Architects</h4><p>Registered with the Council of Architecture.</p></div>
+        <div class="feature-card"><span class="icon">📋</span><h4>Company Secretaries</h4><p>ICSI-certified CS professionals.</p></div>
+        <div class="feature-card"><span class="icon">💼</span><h4>Cost Accountants</h4><p>ICMAI-certified CMA professionals.</p></div>
+        <div class="feature-card"><span class="icon">➕</span><h4>Other Statutory Certs</h4><p>Any profession certified by a body established under law in India or abroad.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 ACCESS -->
+  <div class="chapter" id="s2">
+    <div class="chapter-num">Chapter 02</div>
+    <h2>Access, Membership & KYC</h2>
+    <p class="lead">Entry into Fraternity is not open. It is earned. The verification process ensures every member is who they say they are.</p>
+    <div class="section">
+      <span class="section-title">Registration Flow</span>
+      <div class="flow">
+        <div><span class="step">Step 1</span><span class="arrow">→</span> Register with email or phone number</div>
+        <div><span class="step">Step 2</span><span class="arrow">→</span> OTP verification</div>
+        <div><span class="step">Step 3</span><span class="arrow">→</span> Select profession and certification type</div>
+        <div><span class="step">Step 4</span><span class="arrow">→</span> Upload professional certificate + government ID</div>
+        <div><span class="step">Step 5</span><span class="arrow">→</span> KYC review (automated OCR → manual review)</div>
+        <div><span class="step">Step 6</span><span class="arrow">→</span> On approval → profile creation</div>
+        <div><span class="step">Step 7</span><span class="arrow">→</span> Subscription payment (₹9/month or ₹99/year)</div>
+        <div><span class="step">Step 8</span><span class="arrow">→</span> Full access granted</div>
+      </div>
+    </div>
+    <div class="section">
+      <span class="section-title">KYC Requirements</span>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Mandatory</span><span class="spec-val">KYC is non-negotiable. No verified identity = no access. No exceptions.</span></div>
+        <div class="spec-row"><span class="spec-key">Documents Required</span><span class="spec-val">Professional certificate + valid government-issued ID (Aadhaar, PAN, Passport).</span></div>
+        <div class="spec-row"><span class="spec-key">Verification Method</span><span class="spec-val">Phase 1: Manual admin review. Phase 2+: DigiLocker API / Aadhaar eKYC for automated verification.</span></div>
+        <div class="spec-row"><span class="spec-key">Review Time</span><span class="spec-val">Target: within 24 hours of submission.</span></div>
+        <div class="spec-row"><span class="spec-key">Data Privacy</span><span class="spec-val">KYC documents stored encrypted. Never displayed to other users. Used only for verification.</span></div>
+      </div>
+    </div>
+    <div class="callout critical"><span class="label">Non-Negotiable</span><p>There is no free tier, no guest access, no trial without verification. The gated nature is a core feature — not a barrier to growth but a guarantee of quality.</p></div>
+  </div>
+
+  <!-- 03 SUBSCRIPTION -->
+  <div class="chapter" id="s3">
+    <div class="chapter-num">Chapter 03</div>
+    <h2>Subscription & Pricing</h2>
+    <p class="lead">The subscription fee is deliberately minimal. Its purpose is to ensure every member has made a conscious decision to be here.</p>
+    <div class="section">
+      <span class="section-title">Plans</span>
+      <div class="plan-row">
+        <div class="plan-card"><div class="plan-name">Monthly</div><div class="price">₹9</div><div class="price-sub">per month</div></div>
+        <div class="plan-card preferred"><div class="plan-name">Annual ★ Recommended</div><div class="price">₹99</div><div class="price-sub">per year · ₹8.25/month</div></div>
+      </div>
+    </div>
+    <div class="section">
+      <span class="section-title">Subscription Notifications</span>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">7 Days Before Expiry</span><span class="spec-val">In-app notification + optional email. Friendly reminder, no urgency language.</span></div>
+        <div class="spec-row"><span class="spec-key">1 Day Before Expiry</span><span class="spec-val">In-app notification + optional email. Clear, factual — not alarmist.</span></div>
+        <div class="spec-row"><span class="spec-key">On Expiry</span><span class="spec-val">Feed becomes read-only, with clear renewal CTA.</span></div>
+        <div class="spec-row"><span class="spec-key">Tone</span><span class="spec-val">All notifications are informative and respectful. No dark patterns, no fear-based language.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 AVAILABILITY -->
+  <div class="chapter" id="s4">
+    <div class="chapter-num">Chapter 04</div>
+    <h2>Platform Availability</h2>
+    <p class="lead">Fraternity is accessible wherever professionals work — desktop, laptop, or mobile.</p>
+    <div class="section">
+      <span class="section-title">Supported Surfaces</span>
+      <table>
+        <tr><th>Surface</th><th>Platforms</th><th>Phase</th></tr>
+        <tr><td><strong>Web Browser</strong></td><td>Chrome, Firefox, Safari, Edge</td><td>MVP</td></tr>
+        <tr><td><strong>Mobile — Android</strong></td><td>Android 10 and above</td><td>Phase 2</td></tr>
+        <tr><td><strong>Mobile — iOS</strong></td><td>iPhone, iOS 15 and above</td><td>Phase 2</td></tr>
+        <tr><td><strong>Desktop</strong></td><td>Windows, macOS, Linux (via PWA or Electron)</td><td>Phase 3</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 05 HOME FEED -->
+  <div class="chapter" id="s5">
+    <div class="chapter-num">Chapter 05</div>
+    <h2>Home Feed & Content Discovery</h2>
+    <p class="lead">The feed is the heart of Fraternity. Chronological, domain-focused, and free of algorithmic manipulation.</p>
+    <div class="section">
+      <span class="section-title">Feed Toggle — Same Domain vs Inter Domain</span>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Same Domain</span><span class="spec-val">Default state. Shows posts only from peers in the user's own profession. Clean, focused, directly relevant.</span></div>
+        <div class="spec-row"><span class="spec-key">Inter Domain</span><span class="spec-val">Opt-in toggle. Shows posts from professionals outside the user's own domain. Enables cross-professional discovery.</span></div>
+        <div class="spec-row"><span class="spec-key">Following</span><span class="spec-val">Chronological feed from people you explicitly follow, across all domains.</span></div>
+        <div class="spec-row"><span class="spec-key">No Algorithmic Ranking</span><span class="spec-val">Strictly chronological. No engagement-based ordering. Ever.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 POST TYPES -->
+  <div class="chapter" id="s6">
+    <div class="chapter-num">Chapter 06</div>
+    <h2>Post Types</h2>
+    <p class="lead">Fraternity supports distinct post formats, each designed for a specific kind of professional exchange.</p>
+    <div class="section">
+      <span class="section-title">Standard Post</span>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Content Types</span><span class="spec-val">Text (rich or plain), images (up to 4), videos (up to 4), documents.</span></div>
+        <div class="spec-row"><span class="spec-key">@Mentions</span><span class="spec-val">Tag peers directly in posts using @username — they receive a notification and a link to the post.</span></div>
+        <div class="spec-row"><span class="spec-key">Reactions</span><span class="spec-val">Like, repost, quote, comment, bookmark — all actions tracked privately.</span></div>
+        <div class="spec-row"><span class="spec-key">Views</span><span class="spec-val">Post view counts are tracked automatically when a peer opens the thread.</span></div>
+        <div class="spec-row"><span class="spec-key">Quote Post</span><span class="spec-val">Quote another peer's post with your own commentary attached above the original.</span></div>
+        <div class="spec-row"><span class="spec-key">Delete</span><span class="spec-val">Authors can delete any of their own posts at any time. No recovery.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 BOOM -->
+  <div class="chapter" id="s7">
+    <div class="chapter-num">Chapter 07</div>
+    <h2>The Boom Mechanism</h2>
+    <p class="lead">Boom is Fraternity's answer to the algorithm. Author-controlled, deliberate, without engagement manipulation.</p>
+    <div class="section">
+      <div class="boom-grid">
+        <div class="boom-card instant">
+          <h4>⚡ Instant Boom</h4>
+          <p>Post is immediately pushed to the home feeds of all relevant peers in the author's domain.</p>
+          <div class="visual">Author posts → ALL domain peers receive it in feed immediately. No delay. Simultaneous reach.</div>
+        </div>
+        <div class="boom-card ripple">
+          <h4>🌊 Ripple Boom</h4>
+          <p>Post propagates gradually. A new peer receives the post only after the previous peer has viewed it.</p>
+          <div class="visual">Author defines group [A,B,C,D,E] → A receives → A views → B receives → B views → C… Reach grows through real attention.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 PROFILES -->
+  <div class="chapter" id="s8">
+    <div class="chapter-num">Chapter 08</div>
+    <h2>Profiles & Expertise Visibility</h2>
+    <p class="lead">A profile on Fraternity is a professional identity, not a social media persona.</p>
+    <div class="section">
+      <span class="section-title">Profile Contents</span>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">Full Name</span><span class="spec-val">Verified name as per KYC documents. Cannot be a pseudonym.</span></div>
+        <div class="spec-row"><span class="spec-key">Profession & Domain</span><span class="spec-val">Certification type and professional domain.</span></div>
+        <div class="spec-row"><span class="spec-key">Declared Expertise</span><span class="spec-val">User explicitly lists areas of professional expertise. This is the most critical discovery field.</span></div>
+        <div class="spec-row"><span class="spec-key">Post History</span><span class="spec-val">All posts by this user, visible on their profile.</span></div>
+        <div class="spec-row"><span class="spec-key">What Is NOT Shown</span><span class="spec-val">No follower count on profile card, no influence score, no badges, no leaderboard rank. No vanity metrics.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 09 COMMUNICATION -->
+  <div class="chapter" id="s9">
+    <div class="chapter-num">Chapter 09</div>
+    <h2>Communication — Chat, Calls & Meetings</h2>
+    <p class="lead">Fraternity is a complete professional communication environment.</p>
+    <div class="section">
+      <span class="section-title">Direct Messages</span>
+      <div class="spec-list">
+        <div class="spec-row"><span class="spec-key">One-to-One Chat</span><span class="spec-val">Direct messaging between any two verified peers. Professional in tone and purpose.</span></div>
+        <div class="spec-row"><span class="spec-key">Message Types</span><span class="spec-val">Text messages, file sharing (documents, images).</span></div>
+        <div class="spec-row"><span class="spec-key">Read Receipts</span><span class="spec-val">Standard delivery and read receipt indicators.</span></div>
+        <div class="spec-row"><span class="spec-key">Chat History</span><span class="spec-val">Full message history maintained and searchable within the chat section.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 INTERFACE -->
+  <div class="chapter" id="s10">
+    <div class="chapter-num">Chapter 10</div>
+    <h2>Interface & Navigation Structure</h2>
+    <p class="lead">Designed to feel intentional — like a tool you come to with purpose and leave when your work is done.</p>
+    <div class="section">
+      <span class="section-title">Design Principles</span>
+      <ul class="clean">
+        <li><strong>Clarity over decoration</strong> — UI exists to serve function, not to impress</li>
+        <li><strong>Intent-driven interaction</strong> — every tap should have clear purpose and outcome</li>
+        <li><strong>No infinite scroll tricks</strong> — clear end-of-feed state, no forced content recycling</li>
+        <li><strong>Clean, professional aesthetic</strong> — not playful or gamified. Feels like a serious professional tool</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 11 GOVERNANCE -->
+  <div class="chapter" id="s11">
+    <div class="chapter-num">Chapter 11</div>
+    <h2>Governance & Moderation</h2>
+    <p class="lead">Verified professionals, who have paid to be here, will largely govern themselves.</p>
+    <div class="section">
+      <span class="section-title">The Three-Strike System</span>
+      <div class="flow">
+        <div><span class="step">Any Peer</span><span class="arrow">→</span> Flags a post or behaviour as unprofessional</div>
+        <div><span class="step">Admin</span><span class="arrow">→</span> Reviews flagged content</div>
+        <div><span class="step">Strike 1</span><span class="arrow">→</span> Formal warning issued. Notified in-app and email.</div>
+        <div><span class="step">Strike 2</span><span class="arrow">→</span> Second formal warning. Informed of consequence of next strike.</div>
+        <div><span class="step">Strike 3</span><span class="arrow">→</span> Account removed. Access revoked. Subscription cancelled.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12 WHAT IT'S NOT -->
+  <div class="chapter" id="s12">
+    <div class="chapter-num">Chapter 12</div>
+    <h2>What Fraternity Is Not</h2>
+    <p class="lead">These boundaries are permanent design decisions.</p>
+    <div class="section">
+      <div class="feature-grid">
+        <div class="feature-card"><span class="icon">🚫</span><h4>Not a Mass-Market Platform</h4><p>Scale is not the goal. 10,000 engaged verified professionals is worth more than 10 million passive anonymous accounts.</p></div>
+        <div class="feature-card"><span class="icon">🚫</span><h4>Not Ad-Driven</h4><p>No advertisements. No sponsored content. No promoted posts. Ever. Revenue comes only from subscriptions.</p></div>
+        <div class="feature-card"><span class="icon">🚫</span><h4>Not Algorithmically Addictive</h4><p>No infinite scroll, no dopamine-loop notifications, no content ranking designed to maximise time-on-site.</p></div>
+        <div class="feature-card"><span class="icon">🚫</span><h4>Not Based on Popularity Metrics</h4><p>No follower counts displayed, no leaderboards, no trending, no "most liked" sections.</p></div>
+        <div class="feature-card"><span class="icon">🚫</span><h4>Not Open to Everyone</h4><p>The closed, verified nature is a permanent feature — not a phase to be outgrown as the platform scales.</p></div>
+        <div class="feature-card"><span class="icon">🚫</span><h4>Not a Job Board</h4><p>Fraternity is for professional exchange and knowledge — not for job listings or commercial transactions.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13 FEATURE TABLE -->
+  <div class="chapter" id="s13">
+    <div class="chapter-num">Chapter 13</div>
+    <h2>Complete Feature Table</h2>
+    <p class="lead">Every feature, its description, and its build phase.</p>
+    <div class="section">
+      <span class="section-title">Feed & Discovery</span>
+      <table>
+        <tr><th>Feature</th><th>Description</th><th>Phase</th></tr>
+        <tr><td>Same-Domain Feed</td><td>Chronological feed of posts from own profession only.</td><td>MVP</td></tr>
+        <tr><td>Inter-Domain Feed</td><td>Switch to see posts from other professions.</td><td>Phase 2</td></tr>
+        <tr><td>Following Feed</td><td>Posts from explicitly followed peers only.</td><td>MVP</td></tr>
+        <tr><td>No Algorithmic Ranking</td><td>Strictly chronological. No engagement-based ordering.</td><td>Always</td></tr>
+      </table>
+    </div>
+    <div class="section">
+      <span class="section-title">Posts & Interactions</span>
+      <table>
+        <tr><th>Feature</th><th>Description</th><th>Phase</th></tr>
+        <tr><td>Standard Post</td><td>Text, up to 4 images/videos, files, links, @mentions, #tags.</td><td>MVP</td></tr>
+        <tr><td>Comments</td><td>Open discussion on posts, supports @mentions, author can delete.</td><td>MVP</td></tr>
+        <tr><td>Like / Repost / Quote</td><td>Standard post interactions with notification triggers.</td><td>MVP</td></tr>
+        <tr><td>View Count</td><td>Automatically tracked when a peer opens a thread.</td><td>MVP</td></tr>
+        <tr><td>Bookmark / Save</td><td>Private post saving for later reference.</td><td>MVP</td></tr>
+        <tr><td>@Mentions</td><td>Tag any peer in posts or comments — they are notified.</td><td>MVP</td></tr>
+        <tr><td>Delete Post / Comment</td><td>Authors can delete their own content at any time.</td><td>MVP</td></tr>
+      </table>
+    </div>
+    <div class="section">
+      <span class="section-title">Communication</span>
+      <table>
+        <tr><th>Feature</th><th>Description</th><th>Phase</th></tr>
+        <tr><td>Direct Messages</td><td>One-to-one messaging between verified peers.</td><td>MVP</td></tr>
+        <tr><td>File Sharing in Chat</td><td>Send images and documents in messages.</td><td>MVP</td></tr>
+        <tr><td>Read Receipts</td><td>Delivery and read indicators in chat.</td><td>Phase 2</td></tr>
+        <tr><td>Voice Calls</td><td>WebRTC-based one-to-one audio calls.</td><td>Phase 2</td></tr>
+        <tr><td>Video Calls</td><td>WebRTC-based video calls, 720p minimum.</td><td>Phase 2</td></tr>
+      </table>
+    </div>
+    <div class="callout ok">
+      <span class="label">Phase Legend</span>
+      <p><strong>MVP</strong> — First development cycle (web only).<br>
+      <strong>Phase 2</strong> — After MVP validation (includes mobile).<br>
+      <strong>Phase 3</strong> — Desktop app, automated KYC, group chats.<br>
+      <strong>Always</strong> — Permanent design decisions. Never changed.</p>
+    </div>
+  </div>
+
+  <div class="divider">· · ·</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="doc-footer">
+  <div><strong>Fraternity™</strong> — Product Specification v2.0</div>
+  <div>Fraternity Technologies Private Limited</div>
+  <div>February 2026 · Confidential</div>
+</div>
+
+</body>
+</html>

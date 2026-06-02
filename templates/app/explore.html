@@ -1,0 +1,110 @@
+{% extends "app_shell.html" %}
+{% from "macros/post_card.html" import render_post %}
+{% block title %}Explore · Fraternity{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-hd-title">Explore</h1>
+  <div class="feed-tabs" style="margin-left:auto">
+    <a href="{{ url_for('explore', q=query, tab='posts') }}" class="ftab {% if tab!='users' %}active{% endif %}">
+      <i class="fas fa-pen-nib"></i><span>Posts</span>
+    </a>
+    <a href="{{ url_for('explore', q=query, tab='users') }}" class="ftab {% if tab=='users' %}active{% endif %}">
+      <i class="fas fa-users"></i><span>Professionals</span>
+    </a>
+  </div>
+</div>
+
+<form action="{{ url_for('explore') }}" method="GET" class="explore-search-row">
+  <input type="hidden" name="tab" value="{{ tab }}">
+  <i class="fas fa-magnifying-glass" style="color:var(--txt3);font-size:14px"></i>
+  <input type="text" name="q" value="{{ query }}" placeholder="Search posts, @users, #tags…" autofocus>
+  <button type="submit" class="btn-search-go">Search</button>
+</form>
+
+<div class="explore-fields">
+  <a href="{{ url_for('explore') }}" class="ef-pill {% if not field and not query %}active{% endif %}">All</a>
+  {% for cat in field_categories %}
+  <a href="{{ url_for('explore', field=cat) }}" class="ef-pill {% if field==cat %}active{% endif %}">{{ cat }}</a>
+  {% endfor %}
+</div>
+
+{% if tab == 'users' %}
+  {% if users %}
+  <div>
+    {% for u in users %}
+    <div class="user-list-item">
+      <a href="{{ url_for('profile', username=u.username) }}">
+        <img src="{{ url_for('static', filename=u.profile_pic) }}"
+             onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+             class="av-md" alt="">
+      </a>
+      <div class="uli-info">
+        <a href="{{ url_for('profile', username=u.username) }}" class="uli-name">
+          {{ u.name }}{% if u.is_verified %} <i class="fas fa-circle-check verified-ico"></i>{% endif %}
+        </a>
+        <span class="uli-handle">@{{ u.username }}</span>
+        <span class="uli-field">{{ u.field_category }}</span>
+        {% if u.bio %}<p class="uli-bio">{{ u.bio | truncate(80) }}</p>{% endif %}
+      </div>
+      <button class="btn-follow {% if u.is_following %}following{% endif %}"
+              data-uid="{{ u.id }}" onclick="handleFollow(this)">
+        {{ 'Following' if u.is_following else 'Follow' }}
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-user-magnifying-glass"></i>
+    <h3>No professionals found</h3>
+    <p>Try a different name or username</p>
+  </div>
+  {% endif %}
+
+{% else %}
+  {% if posts %}
+  <div class="post-feed">{% for post in posts %}{{ render_post(post) }}{% endfor %}</div>
+  {% elif query %}
+  <div class="empty-state">
+    <i class="fas fa-magnifying-glass"></i>
+    <h3>No posts found for "{{ query }}"</h3>
+    <p>Try different keywords or browse a domain below</p>
+  </div>
+  {% elif field %}
+  <div class="empty-state">
+    <i class="fas fa-layer-group"></i>
+    <h3>Nothing in {{ field }} yet</h3>
+    <p>Be the first to post in this domain</p>
+    <button onclick="openComposeModal()" class="btn-primary-sm">Post Now</button>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-compass"></i>
+    <h3>Discover Fraternity</h3>
+    <p>Search for posts or professionals, or pick a domain to explore</p>
+  </div>
+  {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block right_col %}
+{% if trending_tags %}
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-hashtag"></i> Trending Tags</div>
+  <div class="tag-cloud">
+    {% for t in trending_tags %}
+    <a href="{{ url_for('explore', q=t.tag) }}" class="tag-pill">{{ t.tag }}</a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-layer-group"></i> All Domains</div>
+  <div class="field-list">
+    {% for cat in field_categories %}
+    <a href="{{ url_for('explore', field=cat) }}" class="field-link {% if field==cat %}active{% endif %}">{{ cat }}</a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

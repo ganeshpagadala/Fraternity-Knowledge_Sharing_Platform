@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.db
+*.sqlite3
+.env
+static/uploads/media/*
+static/uploads/avatars/*
+static/uploads/covers/*
+!static/uploads/media/.gitkeep
+!static/uploads/avatars/.gitkeep
+!static/uploads/covers/.gitkeep
+.venv/
+venv/

@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="app-wrap">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar-l">
+    <div class="inner">
+      <a href="{{ url_for('feed') }}" class="sb-brand">
+        <span class="sb-brand-name">Frater<em>nity</em></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="{{ url_for('feed') }}" class="nav-link {% if request.endpoint=='feed' %}active{% endif %}">
+          <i class="fas fa-house"></i><span class="nl-label">Feed</span>
+        </a>
+        <a href="{{ url_for('explore') }}" class="nav-link {% if request.endpoint=='explore' %}active{% endif %}">
+          <i class="fas fa-compass"></i><span class="nl-label">Explore</span>
+        </a>
+        <a href="{{ url_for('notifications') }}" class="nav-link {% if request.endpoint=='notifications' %}active{% endif %}">
+          <i class="fas fa-bell"></i><span class="nl-label">Alerts</span>
+          {% if notif_count > 0 %}<span class="nl-badge">{{ notif_count }}</span>{% endif %}
+        </a>
+        <a href="{{ url_for('messages') }}" class="nav-link {% if request.endpoint in ('messages','conversation') %}active{% endif %}">
+          <i class="fas fa-envelope"></i><span class="nl-label">Messages</span>
+          {% if msg_count > 0 %}<span class="nl-badge">{{ msg_count }}</span>{% endif %}
+        </a>
+        <a href="{{ url_for('bookmarks') }}" class="nav-link {% if request.endpoint=='bookmarks' %}active{% endif %}">
+          <i class="fas fa-bookmark"></i><span class="nl-label">Saved</span>
+        </a>
+        {% if current_user %}
+        <a href="{{ url_for('profile', username=current_user.username) }}" class="nav-link {% if request.endpoint=='profile' %}active{% endif %}">
+          <i class="fas fa-user"></i><span class="nl-label">Profile</span>
+        </a>
+        <a href="{{ url_for('settings') }}" class="nav-link {% if request.endpoint=='settings' %}active{% endif %}">
+          <i class="fas fa-gear"></i><span class="nl-label">Settings</span>
+        </a>
+        {% endif %}
+      </nav>
+
+      <button class="btn-new-post" onclick="openComposeModal()">
+        <i class="fas fa-feather-pointed"></i>
+        <span class="nl-label">New Post</span>
+      </button>
+
+      <div class="sb-footer">
+        <a href="{{ url_for('logout') }}" class="sb-logout-btn" title="Sign out">
+          <i class="fas fa-arrow-right-from-bracket"></i>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-col">{% block content %}{% endblock %}</main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="sidebar-r">
+    <div class="inner">
+      <div class="sb-search">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="text" id="globalSearch" placeholder="Search Fraternity…" autocomplete="off">
+        <div class="sb-search-dd" id="searchDD"></div>
+      </div>
+      {% block right_col %}{% endblock %}
+    </div>
+  </aside>
+
+</div>
+
+<!-- COMPOSE MODAL -->
+<div class="modal-ov" id="composeOv" onclick="closeCompose(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-hd">
+      <span class="modal-hd-title">Frater<em>nity</em> Post</span>
+      <button class="modal-x" onclick="closeCompose()">×</button>
+    </div>
+    <form action="{{ url_for('post_create') }}" method="POST" enctype="multipart/form-data" id="composeForm">
+      <input type="hidden" name="quoted_post_id" id="quotedPostId">
+      <div class="compose-body">
+        {% if current_user %}
+        <img src="{{ url_for('static', filename=current_user.profile_pic) }}"
+             onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+             class="av-md" alt="">
+        {% endif %}
+        <div class="compose-fields">
+          <div class="compose-quote-ctx hidden" id="quoteCtxWrap">
+            <div class="cqc-label">Quoting</div>
+            <p id="quoteCtxText"></p>
+          </div>
+          <textarea name="content" id="composeTa" class="compose-ta"
+                    placeholder="What would you share with your peers? Use @mentions and #tags"
+                    rows="4" maxlength="500"></textarea>
+          <div class="compose-char"><span id="charCount">0</span>/500</div>
+          <div class="media-prev-grid hidden" id="mediaPrevGrid"></div>
+          <p class="compose-media-lbl hidden" id="mediaLbl"></p>
+          <div class="link-row hidden" id="linkRow">
+            <i class="fas fa-link"></i>
+            <input type="url" name="link_url" placeholder="Paste a link…">
+          </div>
+          <div class="compose-toolbar">
+            <label class="ct-btn" title="Add up to 4 photos / videos">
+              <i class="fas fa-image"></i>
+              <input type="file" name="media[]" id="mediaInput" accept="image/*,video/*,.pdf,.doc,.docx"
+                     multiple style="display:none" onchange="handleMediaSelect(this)">
+            </label>
+            <button type="button" class="ct-btn" onclick="toggleLink()" title="Add link"><i class="fas fa-link"></i></button>
+            <button type="button" class="ct-btn emoji-toggle" onclick="toggleEmoji()" title="Emoji"><i class="far fa-face-smile"></i></button>
+            <select name="field_category" class="field-sel">
+              {% for cat in field_categories %}
+              <option value="{{ cat }}" {% if current_user and cat==current_user.field_category %}selected{% endif %}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn-post"><i class="fas fa-paper-plane"></i> Post</button>
+          </div>
+          <div class="emoji-panel hidden" id="emojiPanel">
+            {% for e in ['😀','😂','❤️','🔥','👏','🤔','💡','📌','🚀','✨','📊','🌍','🎯','💬','📖','🧠','⚡','🌟','👀','🎉','✅','❓','⚖️','📐','🏥','🏗️','📈','🤝','💼','🏛️'] %}
+            <button type="button" class="ep-btn" onclick="insertEmoji('{{ e }}')">{{ e }}</button>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- REPLY MODAL -->
+<div class="modal-ov" id="replyOv" onclick="closeReply(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-hd">
+      <span class="modal-hd-title">Reply</span>
+      <button class="modal-x" onclick="closeReply()">×</button>
+    </div>
+    <div id="replyCtx" style="padding:12px 18px;border-bottom:1px solid var(--border);
+                               font-size:13px;color:var(--txt2)"></div>
+    <form action="{{ url_for('post_create') }}" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="parent_post_id" id="replyParentId">
+      <div class="compose-body">
+        {% if current_user %}
+        <img src="{{ url_for('static', filename=current_user.profile_pic) }}"
+             onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+             class="av-sm" alt="">
+        {% endif %}
+        <div class="compose-fields">
+          <textarea name="content" class="compose-ta" placeholder="Write your reply…" rows="3" required></textarea>
+          <div class="compose-toolbar">
+            <label class="ct-btn"><i class="fas fa-image"></i>
+              <input type="file" name="media[]" accept="image/*,video/*" multiple style="display:none">
+            </label>
+            <select name="field_category" class="field-sel">
+              {% for cat in field_categories %}
+              <option value="{{ cat }}" {% if current_user and cat==current_user.field_category %}selected{% endif %}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn-post">Reply</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

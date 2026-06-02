@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Verify OTP · Fraternity{% endblock %}
+{% block body %}
+<div class="auth-page">
+
+  <div class="auth-left">
+    <div class="auth-left-inner">
+      <div class="auth-brand">
+        <div class="auth-brand-name">Frater<em>nity</em></div>
+        <div class="auth-brand-tag">Registration · Step 1 of 2</div>
+      </div>
+      <p class="auth-left-text">
+        A one-time password was sent to your email. Enter it below to verify your identity and complete registration.
+      </p>
+      <div class="auth-spec">
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">OTP Length</span>
+          <span class="auth-spec-val">4 digits</span>
+        </div>
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">Valid For</span>
+          <span class="auth-spec-val">2 minutes from issue</span>
+        </div>
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">Delivery</span>
+          <span class="auth-spec-val">Email · check spam folder</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="otp-eyebrow">Access · Email Verification</div>
+    <h1 class="auth-title">Verify OTP</h1>
+    <p class="auth-sub" style="margin-bottom:28px">Enter the 4-digit code sent to your email address.</p>
+
+    <form action="{{ url_for('verify_otp') }}" method="POST" class="auth-form">
+      <div class="otp-inputs" id="otpInputs">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d1" autocomplete="off">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d2" autocomplete="off">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d3" autocomplete="off">
+        <input class="otp-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" id="d4" autocomplete="off">
+        <input type="hidden" name="otp" id="otpHidden">
+      </div>
+      <p class="otp-hint" id="otpTimer" style="margin-bottom:16px">Code expires in <strong id="countdown" style="color:var(--gold)">2:00</strong></p>
+      <button type="submit" class="btn-auth" id="otpSubmit">
+        <i class="fas fa-shield-check"></i> Verify & Create Account
+      </button>
+    </form>
+
+    <p class="auth-switch"><a href="{{ url_for('signup') }}">← Back to registration</a></p>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('[data-auto-dismiss]').forEach(el => setTimeout(() => el.remove(), 4000));
+
+// OTP digit jump
+const digits = ['d1','d2','d3','d4'].map(id => document.getElementById(id));
+digits.forEach((el, i) => {
+  el.addEventListener('input', () => {
+    el.value = el.value.replace(/[^0-9]/g,'');
+    if (el.value && i < 3) digits[i+1].focus();
+    updateHidden();
+  });
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !el.value && i > 0) digits[i-1].focus();
+  });
+  el.addEventListener('paste', e => {
+    e.preventDefault();
+    const txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,4);
+    txt.split('').forEach((ch, j) => { if (digits[j]) digits[j].value = ch; });
+    updateHidden();
+    if (txt.length >= 4) digits[3].focus();
+  });
+});
+function updateHidden() {
+  document.getElementById('otpHidden').value = digits.map(d => d.value).join('');
+}
+digits[0].focus();
+
+// Countdown
+let secs = 120;
+const cd = document.getElementById('countdown');
+const timer = setInterval(() => {
+  secs--;
+  if (secs <= 0) { clearInterval(timer); cd.textContent = 'Expired'; cd.style.color='var(--red)'; }
+  else cd.textContent = `${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
+}, 1000);
+</script>
+{% endblock %}

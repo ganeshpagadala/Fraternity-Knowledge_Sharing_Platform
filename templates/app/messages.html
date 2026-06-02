@@ -1,0 +1,182 @@
+{% extends "app_shell.html" %}
+{% block title %}Messages · Fraternity{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-hd-title">Messages</h1>
+  <div style="margin-left:auto;font-family:var(--font-m);font-size:10px;color:var(--txt3)">
+    Direct messaging between verified professionals
+  </div>
+</div>
+
+<div class="messages-layout">
+
+  <!-- ── Conversation list (left panel) ── -->
+  <div class="conv-list">
+    <div class="conv-search-row">
+      <i class="fas fa-magnifying-glass"></i>
+      <input type="text" id="convSearch" placeholder="Search conversations…" autocomplete="off">
+    </div>
+
+    {% if conversations %}
+    {% for u in conversations %}
+    <a href="{{ url_for('conversation', other_id=u.id) }}"
+       class="conv-item {% if active_user and active_user.id==u.id %}active{% endif %}"
+       data-name="{{ u.name|lower }}">
+      <div style="position:relative;flex-shrink:0">
+        <img src="{{ url_for('static', filename=u.profile_pic) }}"
+             onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+             class="av-sm" alt="">
+      </div>
+      <div class="conv-info">
+        <div class="conv-name-row">
+          <span class="conv-name">{{ u.name }}</span>
+          {% if u.last_time %}
+          <span class="conv-time">{{ u.last_time | timeago }}</span>
+          {% endif %}
+        </div>
+        <div class="conv-last">
+          {{ (u.last_message or 'Start a conversation') | truncate(38) }}
+        </div>
+      </div>
+      {% if u.unread_count and u.unread_count > 0 %}
+      <span class="conv-unread-dot">{{ u.unread_count }}</span>
+      {% endif %}
+    </a>
+    {% endfor %}
+    {% else %}
+    <div class="conv-empty">
+      <i class="fas fa-envelope-open"></i>
+      <p>No conversations yet</p>
+      <small>Message a peer from their profile page</small>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ── Chat panel (right side) ── -->
+  {% if active_user and msgs is defined %}
+  <div class="chat-panel">
+    <!-- Chat header -->
+    <div class="chat-hd">
+      <a href="{{ url_for('profile', username=active_user.username) }}"
+         style="display:flex;align-items:center;gap:10px;text-decoration:none;flex:1">
+        <img src="{{ url_for('static', filename=active_user.profile_pic) }}"
+             onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+             class="av-sm" alt="">
+        <div>
+          <div class="chat-hd-name">{{ active_user.name }}</div>
+          <div class="chat-hd-sub">@{{ active_user.username }} · {{ active_user.field_category }}</div>
+        </div>
+      </a>
+      <a href="{{ url_for('profile', username=active_user.username) }}"
+         class="chat-profile-btn" title="View profile">
+        <i class="fas fa-user"></i>
+      </a>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-msgs" id="chatMessages"
+         data-last-id="{{ msgs[-1].id if msgs else 0 }}">
+      {% if msgs %}
+        {% set ns = namespace(prev_date=None) %}
+        {% for m in msgs %}
+          {% set msg_date = m.created_at.strftime('%b %d, %Y') if m.created_at else '' %}
+          {% if msg_date != ns.prev_date %}
+          <div class="msg-date-sep">{{ msg_date }}</div>
+          {% set ns.prev_date = msg_date %}
+          {% endif %}
+          <div class="msg-bbl {% if m.sender_id == current_user.id %}mine{% else %}theirs{% endif %}">
+            <div class="msg-text">{{ m.content or '' }}</div>
+            {% if m.media_url %}
+            <div class="msg-media-wrap">
+              <img src="{{ url_for('static', filename=m.media_url) }}" class="msg-media" alt=""
+                   onclick="openLightbox(this.src)">
+            </div>
+            {% endif %}
+            <span class="msg-ts">
+              {{ m.created_at.strftime('%H:%M') if m.created_at else '' }}
+              {% if m.sender_id == current_user.id %}
+              <i class="fas fa-check{% if m.is_read %}-double{% endif %}"
+                 style="color:{% if m.is_read %}var(--gold){% else %}var(--txt3){% endif %};font-size:9px"></i>
+              {% endif %}
+            </span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="chat-start-state">
+          <img src="{{ url_for('static', filename=active_user.profile_pic) }}"
+               onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+               class="av-xl" alt="">
+          <h3>{{ active_user.name }}</h3>
+          <p>@{{ active_user.username }} · {{ active_user.field_category }}</p>
+          <span class="chat-start-hint">Send a message to start the conversation</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Compose -->
+    <form action="{{ url_for('conversation', other_id=active_user.id) }}" method="POST"
+          enctype="multipart/form-data" class="chat-compose" id="chatForm">
+      <label class="chat-attach-btn" title="Attach file">
+        <i class="fas fa-paperclip"></i>
+        <input type="file" name="media" accept="image/*,.pdf,.doc,.docx" style="display:none"
+               onchange="updateAttachLabel(this)">
+      </label>
+      <span class="attach-lbl" id="attachLbl"></span>
+      <input type="text" name="content" id="chatInput" placeholder="Write a message…" autocomplete="off">
+      <button type="submit" class="btn-send">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+
+  {% else %}
+  <!-- No conversation selected -->
+  <div class="chat-panel">
+    <div class="chat-empty-full">
+      <div class="cef-icon"><i class="fas fa-comments"></i></div>
+      <h2>Your Messages</h2>
+      <p>Select a conversation from the list, or go to a professional's profile and click <strong>Message</strong> to start a new conversation.</p>
+      <a href="{{ url_for('explore') }}" class="btn-primary-sm" style="display:inline-flex;align-items:center;gap:7px;margin-top:6px">
+        <i class="fas fa-compass"></i> Explore Professionals
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if active_user %}
+<script>
+  // Scroll to bottom
+  const chatBox = document.getElementById('chatMessages');
+  if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+
+  // Poll for new messages
+  startMsgPolling({{ active_user.id }});
+
+  // Enter to send
+  document.getElementById('chatInput')?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('chatForm').submit(); }
+  });
+
+  // Attachment label
+  function updateAttachLabel(input) {
+    const lbl = document.getElementById('attachLbl');
+    if (lbl) lbl.textContent = input.files[0] ? input.files[0].name : '';
+  }
+</script>
+{% endif %}
+
+<script>
+  // Filter conversations
+  document.getElementById('convSearch')?.addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.conv-item').forEach(el => {
+      el.style.display = el.dataset.name?.includes(q) ? '' : 'none';
+    });
+  });
+</script>
+{% endblock %}

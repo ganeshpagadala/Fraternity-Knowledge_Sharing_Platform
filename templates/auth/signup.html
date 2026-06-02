@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Register · Fraternity{% endblock %}
+{% block body %}
+<div class="auth-page">
+
+  <div class="auth-left">
+    <div class="auth-left-inner">
+      <div class="auth-brand">
+        <div class="auth-brand-name">Frater<em>nity</em></div>
+        <div class="auth-brand-tag">Registration · Step 1 of 2</div>
+      </div>
+      <p class="auth-left-text">
+        Join the professional commons. Verified entry. Chronological feed.
+        No algorithm. No ads. Built for serious professionals.
+      </p>
+      <div class="auth-spec">
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">Step 1</span>
+          <span class="auth-spec-val">Create account + OTP verify</span>
+        </div>
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">Step 2</span>
+          <span class="auth-spec-val">Complete your profile</span>
+        </div>
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">Security</span>
+          <span class="auth-spec-val">SHA-256 password hashing</span>
+        </div>
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">OTP</span>
+          <span class="auth-spec-val">Valid for 2 minutes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-chapter-num">Access · Registration</div>
+    <h1 class="auth-title">Create Account</h1>
+    <p class="auth-sub">Start with your professional details.</p>
+
+    <form action="{{ url_for('signup') }}" method="POST" class="auth-form">
+      <div class="form-row two-col">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" name="name" class="form-input" placeholder="Ada Lovelace" required>
+        </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" name="username" class="form-input" placeholder="ada_lovelace"
+                 pattern="[a-zA-Z0-9_]+" title="Letters, numbers, underscores only" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" class="form-input" placeholder="ada@example.com" required>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" name="phonenumber" class="form-input" placeholder="+91 9876543210">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-password-wrap">
+          <input type="password" name="password" id="signupPw" class="form-input"
+                 placeholder="Minimum 6 characters" minlength="6" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('signupPw','signupEye')">
+            <i class="far fa-eye" id="signupEye"></i>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="btn-auth">
+        <i class="fas fa-envelope"></i> Send Verification OTP
+      </button>
+    </form>
+
+    <a href="{{ url_for('home') }}" class="auth-back-link"><i class="fas fa-arrow-left"></i> Back to Fraternity</a>
+    <p class="auth-switch">Already on Fraternity? <a href="{{ url_for('login') }}">Sign in</a></p>
+  </div>
+</div>
+
+<script>
+function togglePw(id, eyeId) {
+  const el = document.getElementById(id);
+  const eye = document.getElementById(eyeId);
+  if (el.type === 'password') { el.type = 'text'; eye.className = 'far fa-eye-slash'; }
+  else { el.type = 'password'; eye.className = 'far fa-eye'; }
+}
+document.querySelectorAll('[data-auto-dismiss]').forEach(el => setTimeout(() => el.remove(), 4000));
+</script>
+{% endblock %}

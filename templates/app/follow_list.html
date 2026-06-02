@@ -1,0 +1,63 @@
+{% extends "app_shell.html" %}
+{% block title %}{{ list_type }} · {{ profile_user.name }} · Fraternity{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <a href="{{ url_for('profile', username=profile_user.username) }}" class="page-hd-back">
+    <i class="fas fa-arrow-left"></i>
+  </a>
+  <h1 class="page-hd-title">{{ list_type }}</h1>
+  <span style="margin-left:auto;font-family:var(--font-m);font-size:11px;color:var(--txt3)">
+    @{{ profile_user.username }}
+  </span>
+</div>
+
+<div>
+  {% if users %}
+  {% for u in users %}
+  <div class="user-list-item">
+    <a href="{{ url_for('profile', username=u.username) }}">
+      <img src="{{ url_for('static', filename=u.profile_pic) }}"
+           onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+           class="av-md" alt="">
+    </a>
+    <div class="uli-info">
+      <a href="{{ url_for('profile', username=u.username) }}" class="uli-name">
+        {{ u.name }}{% if u.is_verified %} <i class="fas fa-circle-check verified-ico"></i>{% endif %}
+      </a>
+      <span class="uli-handle">@{{ u.username }}</span>
+      <span class="uli-field">{{ u.field_category }}</span>
+      {% if u.bio %}<p class="uli-bio">{{ u.bio | truncate(80) }}</p>{% endif %}
+    </div>
+    {% if current_user and current_user.id != u.id %}
+    <button class="btn-follow {% if u.is_following %}following{% endif %}"
+            data-uid="{{ u.id }}" onclick="handleFollow(this)">
+      {{ 'Following' if u.is_following else 'Follow' }}
+    </button>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-users"></i>
+    <h3>No {{ list_type | lower }} yet</h3>
+    <p>{{ 'Nobody follows this account yet' if list_type=='Followers' else 'Not following anyone yet' }}</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block right_col %}
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-user"></i> Profile</div>
+  <div style="padding:16px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px">
+    <img src="{{ url_for('static', filename=profile_user.profile_pic) }}"
+         onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+         class="av-lg" alt="">
+    <a href="{{ url_for('profile', username=profile_user.username) }}"
+       style="font-family:var(--font-d);font-size:15px;color:var(--txt)">{{ profile_user.name }}</a>
+    <span style="font-family:var(--font-m);font-size:11px;color:var(--txt3)">@{{ profile_user.username }}</span>
+    <span style="font-family:var(--font-m);font-size:10px;color:var(--gold);opacity:.8">{{ profile_user.field_category }}</span>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Fraternity{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- ── Permanent Home Button ── -->
+<a href="{{ url_for('home') }}" class="home-fab" title="Go to Landing Page">
+  <i class="fas fa-house"></i>
+</a>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="toast-container" id="toastContainer">
+  {% for cat, msg in messages %}
+  <div class="toast toast-{{ cat }}" data-auto-dismiss>
+    <i class="fas fa-{% if cat=='success' %}check{% elif cat=='danger' %}times{% elif cat=='warning' %}exclamation{% else %}info{% endif %}-circle"></i>
+    <span>{{ msg }}</span>
+    <span class="toast-close" onclick="this.parentElement.remove()">×</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+{% block body %}{% endblock %}
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

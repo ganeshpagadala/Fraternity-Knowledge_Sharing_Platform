@@ -1,0 +1,78 @@
+{% extends "app_shell.html" %}
+{% from "macros/post_card.html" import render_post %}
+{% block title %}Reposts · Fraternity{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <a href="{{ url_for('post_detail', post_id=post.id) }}" class="page-hd-back">
+    <i class="fas fa-arrow-left"></i>
+  </a>
+  <h1 class="page-hd-title">Reposts</h1>
+  <span style="margin-left:auto;font-family:var(--font-m);font-size:11px;color:var(--txt3)">
+    {{ reposters|length }} repost{{ 's' if reposters|length!=1 else '' }}
+  </span>
+</div>
+
+<!-- Original post preview -->
+<div style="padding:14px 18px;border-bottom:1px solid var(--gold-gl);background:var(--card)">
+  <div style="font-family:var(--font-m);font-size:10px;color:var(--gold);letter-spacing:1px;
+              text-transform:uppercase;margin-bottom:6px">Original Post</div>
+  <div style="display:flex;gap:10px;align-items:flex-start">
+    <img src="{{ url_for('static', filename=post.profile_pic or 'uploads/default_avatar.png') }}"
+         onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+         class="av-sm" alt="">
+    <div>
+      <div style="font-family:var(--font-d);font-size:14px;color:var(--txt)">{{ post.name }}</div>
+      <div style="font-size:14px;color:var(--txt2);margin-top:4px;line-height:1.5">
+        {{ (post.content or '') | truncate(120) }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- List of people who reposted -->
+{% if reposters %}
+<div>
+  {% for u in reposters %}
+  <div class="user-list-item">
+    <a href="{{ url_for('profile', username=u.username) }}">
+      <img src="{{ url_for('static', filename=u.profile_pic) }}"
+           onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+           class="av-md" alt="">
+    </a>
+    <div class="uli-info">
+      <a href="{{ url_for('profile', username=u.username) }}" class="uli-name">
+        {{ u.name }}{% if u.is_verified %}&nbsp;<i class="fas fa-circle-check verified-ico"></i>{% endif %}
+      </a>
+      <span class="uli-handle">@{{ u.username }}</span>
+      <span class="uli-field">{{ u.field_category }}</span>
+    </div>
+    {% if current_user and current_user.id != u.id %}
+    <button class="btn-follow {% if u.is_following %}following{% endif %}"
+            data-uid="{{ u.id }}" onclick="handleFollow(this)">
+      {{ 'Following' if u.is_following else 'Follow' }}
+    </button>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fas fa-retweet"></i>
+  <h3>No reposts yet</h3>
+  <p>Be the first to repost this</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block right_col %}
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-chart-bar"></i> Post Stats</div>
+  <div class="about-row"><i class="fas fa-retweet" style="color:var(--green)"></i>
+    <span>{{ post.repost_count or 0 }} reposts</span></div>
+  <div class="about-row"><i class="fas fa-heart" style="color:var(--red)"></i>
+    <span>{{ post.like_count or 0 }} likes</span></div>
+  <div class="about-row"><i class="far fa-eye" style="color:var(--blue)"></i>
+    <span>{{ post.view_count or 0 }} views</span></div>
+</div>
+{% endblock %}

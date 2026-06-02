@@ -1,0 +1,135 @@
+{% extends "app_shell.html" %}
+{% from "macros/post_card.html" import render_post %}
+{% block title %}{{ profile_user.name }} · Fraternity{% endblock %}
+
+{% block content %}
+<div class="profile-cover"
+     style="{% if profile_user.cover_pic %}background-image:url('{{ url_for('static',filename=profile_user.cover_pic) }}'){% endif %}">
+</div>
+
+<div class="profile-head-row">
+  <img src="{{ url_for('static', filename=profile_user.profile_pic) }}"
+       onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+       class="av-xl" alt="{{ profile_user.name }}">
+  <div class="profile-actions-row">
+    {% if current_user and current_user.id == profile_user.id %}
+    <a href="{{ url_for('settings', tab='profile') }}" class="btn-outline-sm">
+      <i class="fas fa-pen"></i> Edit Profile
+    </a>
+    {% elif current_user %}
+    <button class="btn-follow-lg {% if is_following %}following{% endif %}"
+            data-uid="{{ profile_user.id }}" onclick="handleFollow(this)">
+      {% if is_following %}
+      <i class="fas fa-user-check"></i> Following
+      {% else %}
+      <i class="fas fa-user-plus"></i> Follow
+      {% endif %}
+    </button>
+    <a href="{{ url_for('conversation', other_id=profile_user.id) }}" class="btn-outline-sm">
+      <i class="fas fa-envelope"></i> Message
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="profile-info">
+  <h1 class="profile-name">
+    {{ profile_user.name }}
+    {% if profile_user.is_verified %}
+    <i class="fas fa-circle-check verified-ico" title="Verified professional"></i>
+    {% endif %}
+  </h1>
+  <p class="profile-handle">@{{ profile_user.username }}</p>
+  {% if profile_user.bio %}
+  <p class="profile-bio">{{ profile_user.bio }}</p>
+  {% endif %}
+  <div class="profile-meta-row">
+    <span><i class="fas fa-layer-group"></i>{{ profile_user.field_category }}</span>
+    {% if profile_user.location_text %}
+    <span><i class="fas fa-location-dot"></i>{{ profile_user.location_text }}</span>
+    {% endif %}
+    {% if profile_user.website %}
+    <a href="{{ profile_user.website }}" target="_blank" rel="noopener">
+      <i class="fas fa-link"></i>{{ profile_user.website | replace('https://','') | replace('http://','') | truncate(28) }}
+    </a>
+    {% endif %}
+    <span><i class="fas fa-calendar-alt"></i>Since {{ profile_user.created_at.strftime('%b %Y') }}</span>
+  </div>
+  <div class="profile-counts">
+    <a href="{{ url_for('profile_followers', username=profile_user.username) }}" class="count-link">
+      <strong>{{ counts.followers }}</strong><span>Followers</span>
+    </a>
+    <a href="{{ url_for('profile_following', username=profile_user.username) }}" class="count-link">
+      <strong>{{ counts.following }}</strong><span>Following</span>
+    </a>
+    <div class="count-link">
+      <strong>{{ post_count }}</strong><span>Posts</span>
+    </div>
+  </div>
+</div>
+
+<div class="profile-tabs">
+  <a href="{{ url_for('profile', username=profile_user.username, tab='posts') }}"
+     class="ptab {% if tab=='posts' %}active{% endif %}">
+    <i class="fas fa-pen-nib"></i> Posts
+  </a>
+  <a href="{{ url_for('profile', username=profile_user.username, tab='media') }}"
+     class="ptab {% if tab=='media' %}active{% endif %}">
+    <i class="fas fa-photo-film"></i> Media
+  </a>
+  <a href="{{ url_for('profile', username=profile_user.username, tab='likes') }}"
+     class="ptab {% if tab=='likes' %}active{% endif %}">
+    <i class="far fa-heart"></i> Liked
+  </a>
+</div>
+
+{% if tab == 'media' %}
+  {% set media_items = [] %}
+  {% for post in posts %}{% for m in (post.media_list or []) %}{% if m.media_type=='image' %}{% if media_items.append(m.media_url) %}{% endif %}{% endif %}{% endfor %}{% endfor %}
+  {% if media_items %}
+  <div class="media-grid-3">
+    {% for url in media_items %}
+    <div class="media-thumb">
+      <img src="{{ url_for('static', filename=url) }}" alt="" loading="lazy" onclick="openLightbox(this.src)">
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state"><i class="fas fa-photo-film"></i><h3>No media yet</h3></div>
+  {% endif %}
+{% else %}
+  {% if posts %}
+  <div class="post-feed">{% for post in posts %}{{ render_post(post) }}{% endfor %}</div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fas fa-pen-nib"></i>
+    <h3>No posts yet</h3>
+    {% if current_user and current_user.id == profile_user.id %}
+    <button onclick="openComposeModal()" class="btn-primary-sm">Write your first post</button>
+    {% endif %}
+  </div>
+  {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block right_col %}
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-info-circle"></i> About</div>
+  <div class="about-row"><i class="fas fa-layer-group"></i><span>{{ profile_user.field_category }}</span></div>
+  {% if profile_user.location_text %}
+  <div class="about-row"><i class="fas fa-location-dot"></i><span>{{ profile_user.location_text }}</span></div>
+  {% endif %}
+  {% if profile_user.website %}
+  <div class="about-row"><i class="fas fa-globe"></i>
+    <a href="{{ profile_user.website }}" target="_blank">{{ profile_user.website | truncate(28) }}</a>
+  </div>
+  {% endif %}
+  <div class="about-row"><i class="fas fa-calendar"></i>
+    <span>Member since {{ profile_user.created_at.strftime('%B %Y') }}</span>
+  </div>
+  <div class="about-row"><i class="fas fa-pen-nib"></i><span>{{ post_count }} posts</span></div>
+  <div class="about-row"><i class="fas fa-users"></i>
+    <span>{{ counts.followers }} followers · {{ counts.following }} following</span>
+  </div>
+</div>
+{% endblock %}

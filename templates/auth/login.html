@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Sign In · Fraternity{% endblock %}
+{% block body %}
+<div class="auth-page">
+
+  <!-- LEFT — Brand + spec info -->
+  <div class="auth-left">
+    <div class="auth-left-inner">
+      <div class="auth-brand">
+        <div class="auth-brand-name">Frater<em>nity</em></div>
+        <div class="auth-brand-tag">Professional Platform · v2.0</div>
+      </div>
+      <p class="auth-left-text">
+        A gated platform built exclusively for statute-certified professionals.
+        No ads. No noise. Just signal.
+      </p>
+      <div class="auth-spec">
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">Access</span>
+          <span class="auth-spec-val">Verified professionals only</span>
+        </div>
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">Revenue</span>
+          <span class="auth-spec-val">Subscriptions, never ads</span>
+        </div>
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">Feed</span>
+          <span class="auth-spec-val">Chronological · no algorithm</span>
+        </div>
+        <div class="auth-spec-row">
+          <span class="auth-spec-key">Subscription</span>
+          <span class="auth-spec-val">₹9/month · ₹99/year</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT — Form -->
+  <div class="auth-right">
+    <div class="auth-chapter-num">Access · Authentication</div>
+    <h1 class="auth-title">Sign In</h1>
+    <p class="auth-sub">Welcome back to your professional commons.</p>
+
+    <form action="{{ url_for('login') }}" method="POST" class="auth-form">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" class="form-input" placeholder="you@example.com" required autofocus>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-password-wrap">
+          <input type="password" name="password" id="loginPw" class="form-input" placeholder="••••••••" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('loginPw','loginEye')">
+            <i class="far fa-eye" id="loginEye"></i>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="btn-auth">
+        <i class="fas fa-right-to-bracket"></i> Sign In
+      </button>
+    </form>
+
+    <a href="{{ url_for('home') }}" class="auth-back-link"><i class="fas fa-arrow-left"></i> Back to Fraternity</a>
+    <p class="auth-switch">New to Fraternity? <a href="{{ url_for('signup') }}">Create account</a></p>
+    <p class="auth-switch" style="margin-top:8px"><a href="{{ url_for('forgot_password') }}" style="color:var(--txt3)">Forgot password?</a></p>
+  </div>
+</div>
+
+<script>
+function togglePw(id, eyeId) {
+  const el = document.getElementById(id);
+  const eye = document.getElementById(eyeId);
+  if (el.type === 'password') { el.type = 'text'; eye.className = 'far fa-eye-slash'; }
+  else { el.type = 'password'; eye.className = 'far fa-eye'; }
+}
+document.querySelectorAll('[data-auto-dismiss]').forEach(el => setTimeout(() => el.remove(), 4000));
+</script>
+{% endblock %}

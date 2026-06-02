@@ -1,0 +1,262 @@
+{% extends "app_shell.html" %}
+{% from "macros/post_card.html" import render_post %}
+{% block title %}Post · Fraternity{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <a href="javascript:history.back()" class="page-hd-back"><i class="fas fa-arrow-left"></i></a>
+  <h1 class="page-hd-title">Thread</h1>
+</div>
+
+<!-- ── Main post (full version) ── -->
+<div class="post-detail-main">
+  <div class="post-inner" style="padding:18px 20px">
+    <a href="{{ url_for('profile', username=post.username) }}">
+      <img src="{{ url_for('static', filename=post.profile_pic or 'uploads/default_avatar.png') }}"
+           onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+           class="av-md" alt="">
+    </a>
+    <div class="post-body">
+      <div class="post-hd">
+        <a href="{{ url_for('profile', username=post.username) }}" class="post-author-name">
+          {{ post.name }}{% if post.is_verified %}&nbsp;<i class="fas fa-circle-check verified-ico"></i>{% endif %}
+        </a>
+        <span class="post-handle">@{{ post.username }}</span>
+        <span class="post-field-tag" style="margin-left:auto">{{ post.field_category }}</span>
+        {% if current_user and current_user.id == post.user_id %}
+        <div class="post-menu" id="menu-{{ post.id }}">
+          <button class="post-menu-btn" onclick="toggleMenu({{ post.id }})">
+            <i class="fas fa-ellipsis"></i>
+          </button>
+          <div class="post-menu-dd" id="dd-{{ post.id }}">
+            <button class="pmd-item danger"
+                    onclick="deletePost({{ post.id }}, this)">
+              <i class="fas fa-trash-can"></i> Delete Post
+            </button>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Post text -->
+  {% if post.content %}
+  <div style="padding:0 20px 12px 74px">
+    <p style="font-size:17px;line-height:1.7;color:var(--txt)">{{ post.content | mentionify | safe }}</p>
+  </div>
+  {% endif %}
+
+  <!-- Media -->
+  {% if post.media_list and post.media_list|length > 0 %}
+  <div style="padding:0 20px 12px 74px">
+    <div class="pm-grid g{{ [post.media_list|length,4]|min }}">
+      {% for m in post.media_list[:4] %}
+      <div class="pm-cell">
+        {% if m.media_type == 'image' %}
+        <img src="{{ url_for('static', filename=m.media_url) }}" alt="" loading="lazy"
+             onclick="openLightbox(this.src)">
+        {% elif m.media_type == 'video' %}
+        <video src="{{ url_for('static', filename=m.media_url) }}" controls></video>
+        {% else %}
+        <a href="{{ url_for('static', filename=m.media_url) }}" class="post-file" target="_blank">
+          <i class="fas fa-file-alt"></i> {{ m.media_url.split('/')[-1]|truncate(30) }}
+        </a>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Quoted embed -->
+  {% if post.quoted_content %}
+  <div style="padding:0 20px 12px 74px">
+    <a href="{{ url_for('post_detail', post_id=post.quoted_post_id) }}" class="quoted-embed">
+      <div class="qe-hd">
+        <img src="{{ url_for('static', filename=post.quoted_profile_pic or 'uploads/default_avatar.png') }}"
+             onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+             class="av-xs" alt="">
+        <strong>{{ post.quoted_name }}</strong>
+        <span>@{{ post.quoted_username }}</span>
+      </div>
+      <p class="qe-text">{{ post.quoted_content|truncate(160) }}</p>
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Timestamp line -->
+  <div class="post-detail-ts">
+    <time>{{ post.created_at.strftime('%I:%M %p · %b %d, %Y') if post.created_at else '' }}</time>
+  </div>
+
+  <!-- ── Stats row ── -->
+  <div class="post-detail-stats">
+    <a href="{{ url_for('post_reposts', post_id=post.id) }}" class="pds-item">
+      <strong>{{ post.repost_count or 0 }}</strong>
+      <span>Repost{{ 's' if (post.repost_count or 0) != 1 else '' }}</span>
+    </a>
+    <a href="{{ url_for('post_detail', post_id=post.id) }}#comments" class="pds-item">
+      <strong>{{ comments|length }}</strong>
+      <span>Comment{{ 's' if comments|length != 1 else '' }}</span>
+    </a>
+    <span class="pds-item">
+      <strong>{{ post.like_count or 0 }}</strong>
+      <span>Like{{ 's' if (post.like_count or 0) != 1 else '' }}</span>
+    </span>
+    <span class="pds-item">
+      <strong>{{ post.view_count or 0 }}</strong>
+      <span>View{{ 's' if (post.view_count or 0) != 1 else '' }}</span>
+    </span>
+  </div>
+
+  <!-- ── Action buttons (detail version) ── -->
+  <div class="post-detail-actions">
+    <button class="pda-btn like {% if post.user_liked %}active{% endif %}"
+            data-post="{{ post.id }}" onclick="handleLike(this)" title="Like">
+      <i class="{{ 'fas' if post.user_liked else 'far' }} fa-heart"></i>
+      <span class="lc">Like</span>
+    </button>
+    <button class="pda-btn repost {% if post.user_reposted %}active{% endif %}"
+            data-post="{{ post.id }}" onclick="handleRepost(this)" title="Repost">
+      <i class="fas fa-retweet"></i> Repost
+    </button>
+    <button class="pda-btn"
+            onclick="openComposeModal({{ post.id }},'{{ (post.content or '')|replace("'","&#39;")|truncate(60) }}')"
+            title="Quote">
+      <i class="fas fa-quote-right"></i> Quote
+    </button>
+    <button class="pda-btn bookmark {% if post.user_bookmarked %}active{% endif %}"
+            data-post="{{ post.id }}" onclick="handleBookmark(this)" title="Save">
+      <i class="{{ 'fas' if post.user_bookmarked else 'far' }} fa-bookmark"></i> Save
+    </button>
+  </div>
+</div>
+
+<!-- ── Replies ── -->
+{% if replies %}
+<div class="section-divider">
+  <i class="fas fa-reply"></i> {{ replies|length }} Repl{{ 'y' if replies|length==1 else 'ies' }}
+</div>
+{% for r in replies %}{{ render_post(r) }}{% endfor %}
+{% endif %}
+
+<!-- ── Comment compose ── -->
+<div id="comment-compose" class="comment-compose-wrap">
+  <div class="comments-hd" id="comments">
+    <i class="fas fa-comment-dots"></i>
+    Comments
+    <span class="ch-count">{{ comments|length }}</span>
+  </div>
+  <div class="comment-compose-row">
+    {% if current_user %}
+    <img src="{{ url_for('static', filename=current_user.profile_pic) }}"
+         onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+         class="av-sm" alt="">
+    {% endif %}
+    <form class="cc-form" action="{{ url_for('post_comment', post_id=post.id) }}" method="POST">
+      <textarea name="content" id="commentTa" class="cc-ta" rows="2"
+                placeholder="Add a comment… supports @mentions" required></textarea>
+      <button type="submit" class="btn-comment-submit">Post</button>
+    </form>
+  </div>
+</div>
+
+<!-- ── Comments list ── -->
+<div class="comments-list">
+  {% if comments %}
+  {% for c in comments %}
+  <div class="comment-item">
+    <a href="{{ url_for('profile', username=c.username) }}">
+      <img src="{{ url_for('static', filename=c.profile_pic) }}"
+           onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+           class="av-sm" alt="">
+    </a>
+    <div class="ci-body">
+      <div class="ci-meta">
+        <a href="{{ url_for('profile', username=c.username) }}" class="ci-author">
+          {{ c.name }}{% if c.is_verified %}&nbsp;<i class="fas fa-circle-check verified-ico"></i>{% endif %}
+        </a>
+        <span class="ci-handle">@{{ c.username }}</span>
+        <time class="ci-time">{{ c.created_at | timeago }}</time>
+      </div>
+      <p class="ci-text">{{ c.content | mentionify | safe }}</p>
+    </div>
+    {% if current_user and current_user.id == c.user_id %}
+    <form action="{{ url_for('comment_delete', comment_id=c.id) }}" method="POST"
+          onsubmit="return confirm('Delete this comment?')">
+      <button type="submit" class="ci-del" title="Delete comment">
+        <i class="fas fa-trash-can"></i>
+      </button>
+    </form>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state sm">
+    <i class="far fa-comment"></i>
+    <p>No comments yet — be the first</p>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block right_col %}
+<!-- Author card -->
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-user"></i> Author</div>
+  <div class="author-card-body">
+    <a href="{{ url_for('profile', username=post.username) }}">
+      <img src="{{ url_for('static', filename=post.profile_pic) }}"
+           onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+           class="av-lg" alt="">
+    </a>
+    <a href="{{ url_for('profile', username=post.username) }}" class="acb-name">
+      {{ post.name }}{% if post.is_verified %}&nbsp;<i class="fas fa-circle-check verified-ico"></i>{% endif %}
+    </a>
+    <span class="acb-handle">@{{ post.username }}</span>
+    <span class="acb-field">{{ post.field_category }}</span>
+    <div class="acb-btns">
+      {% if current_user and current_user.id != post.user_id %}
+      <button class="btn-follow" data-uid="{{ post.user_id }}" onclick="handleFollow(this)">
+        Follow
+      </button>
+      <a href="{{ url_for('conversation', other_id=post.user_id) }}" class="btn-outline-sm">
+        <i class="fas fa-envelope"></i> Message
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Stats card -->
+<div class="widget">
+  <div class="widget-hd"><i class="fas fa-chart-bar"></i> Stats</div>
+  <div class="about-row"><i class="fas fa-heart" style="color:var(--red)"></i>
+    <span>{{ post.like_count or 0 }} like{{ 's' if (post.like_count or 0)!=1 else '' }}</span></div>
+  <div class="about-row"><i class="fas fa-retweet" style="color:var(--green)"></i>
+    <span>{{ post.repost_count or 0 }} repost{{ 's' if (post.repost_count or 0)!=1 else '' }}</span></div>
+  <div class="about-row"><i class="far fa-eye" style="color:var(--blue)"></i>
+    <span>{{ post.view_count or 0 }} view{{ 's' if (post.view_count or 0)!=1 else '' }}</span></div>
+  <div class="about-row"><i class="far fa-comment-dots"></i>
+    <span>{{ comments|length }} comment{{ 's' if comments|length!=1 else '' }}</span></div>
+  <div class="about-row"><i class="fas fa-reply"></i>
+    <span>{{ replies|length }} repl{{ 'y' if replies|length==1 else 'ies' }}</span></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-scroll & focus to comment box if URL has #comment-compose
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.hash === '#comment-compose' || window.location.hash === '#comments') {
+    const el = document.getElementById('comment-compose');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => document.getElementById('commentTa')?.focus(), 400);
+    }
+  }
+});
+</script>
+{% endblock %}

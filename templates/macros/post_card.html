@@ -1,0 +1,173 @@
+{% macro render_post(post) %}
+<article class="post-card" id="post-{{ post.id }}">
+
+  {% if post.post_type == 'repost' %}
+  <div class="rp-label">
+    <i class="fas fa-retweet"></i>
+    <a href="{{ url_for('profile', username=post.username) }}">{{ post.name }}</a>&nbsp;reposted
+  </div>
+  {% endif %}
+
+  <div class="post-inner">
+    <a href="{{ url_for('profile', username=post.username) }}" class="post-av-link">
+      <img src="{{ url_for('static', filename=post.profile_pic or 'uploads/default_avatar.png') }}"
+           onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+           class="av-md" alt="{{ post.name }}">
+    </a>
+
+    <div class="post-body">
+      <!-- Header -->
+      <div class="post-hd">
+        <a href="{{ url_for('profile', username=post.username) }}" class="post-author-name">
+          {{ post.name }}{% if post.is_verified %}&nbsp;<i class="fas fa-circle-check verified-ico"></i>{% endif %}
+        </a>
+        <span class="post-handle">@{{ post.username }}</span>
+        <span class="post-sep">·</span>
+        <time class="post-time" title="{{ post.created_at }}">{{ post.created_at | timeago }}</time>
+        <span class="post-field-tag">{{ post.field_category }}</span>
+
+        <!-- Post menu — own posts only -->
+        {% if current_user and current_user.id == post.user_id %}
+        <div class="post-menu" id="menu-{{ post.id }}">
+          <button class="post-menu-btn" aria-label="Post options"
+                  onclick="toggleMenu({{ post.id }})">
+            <i class="fas fa-ellipsis"></i>
+          </button>
+          <div class="post-menu-dd" id="dd-{{ post.id }}">
+            <button class="pmd-item danger"
+                    onclick="deletePost({{ post.id }}, this)">
+              <i class="fas fa-trash-can"></i> Delete Post
+            </button>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Post text — clicking opens post detail -->
+      {% if post.post_type == 'repost' and post.orig_content is not none %}
+      <div class="rp-embed">
+        <div class="rp-embed-hd">
+          <img src="{{ url_for('static', filename=post.orig_profile_pic or 'uploads/default_avatar.png') }}"
+               onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+               class="av-xs" alt="">
+          <strong>{{ post.orig_name }}</strong>
+          <span>@{{ post.orig_username }}</span>
+        </div>
+        <a href="{{ url_for('post_detail', post_id=post.id) }}" class="post-text-link">
+          <p class="post-text">{{ post.orig_content | mentionify | safe }}</p>
+        </a>
+      </div>
+      {% else %}
+        {% if post.content %}
+        <a href="{{ url_for('post_detail', post_id=post.id) }}" class="post-text-link">
+          <p class="post-text">{{ post.content | mentionify | safe }}</p>
+        </a>
+        {% endif %}
+      {% endif %}
+
+      <!-- Quoted embed -->
+      {% if post.quoted_content %}
+      <a href="{{ url_for('post_detail', post_id=post.quoted_post_id) }}" class="quoted-embed">
+        <div class="qe-hd">
+          <img src="{{ url_for('static', filename=post.quoted_profile_pic or 'uploads/default_avatar.png') }}"
+               onerror="this.src='{{ url_for('static',filename='uploads/default_avatar.png') }}'"
+               class="av-xs" alt="">
+          <strong>{{ post.quoted_name }}</strong>
+          <span>@{{ post.quoted_username }}</span>
+          <span style="margin-left:auto;font-family:var(--font-m);font-size:10px;color:var(--txt3)">{{ post.quoted_field }}</span>
+        </div>
+        <p class="qe-text">{{ post.quoted_content | truncate(140) }}</p>
+      </a>
+      {% endif %}
+
+      <!-- Media grid -->
+      {% if post.media_list and post.media_list | length > 0 %}
+        {% set ml = post.media_list %}
+        <div class="pm-grid g{{ [ml|length, 4] | min }}">
+          {% for m in ml[:4] %}
+          <div class="pm-cell">
+            {% if m.media_type == 'image' %}
+            <img src="{{ url_for('static', filename=m.media_url) }}" alt="" loading="lazy"
+                 onclick="openLightbox(this.src)">
+            {% elif m.media_type == 'video' %}
+            <video src="{{ url_for('static', filename=m.media_url) }}" controls preload="none"></video>
+            {% else %}
+            <a href="{{ url_for('static', filename=m.media_url) }}" target="_blank" class="post-file">
+              <i class="fas fa-file-alt"></i> {{ m.media_url.split('/')[-1] | truncate(30) }}
+            </a>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      {% elif post.media_url %}
+        <div class="pm-grid g1">
+          <div class="pm-cell">
+            {% if post.media_type == 'image' %}
+            <img src="{{ url_for('static', filename=post.media_url) }}" alt="" loading="lazy"
+                 onclick="openLightbox(this.src)">
+            {% elif post.media_type == 'video' %}
+            <video src="{{ url_for('static', filename=post.media_url) }}" controls preload="none"></video>
+            {% else %}
+            <a href="{{ url_for('static', filename=post.media_url) }}" target="_blank" class="post-file">
+              <i class="fas fa-file-alt"></i> {{ post.media_url.split('/')[-1] | truncate(30) }}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Link -->
+      {% if post.link_url %}
+      <a href="{{ post.link_url }}" target="_blank" rel="noopener" class="post-link">
+        <i class="fas fa-external-link"></i>
+        <span>{{ post.link_title or (post.link_url | truncate(55)) }}</span>
+      </a>
+      {% endif %}
+
+      <!-- ── Actions bar ── -->
+      <div class="post-actions">
+
+        <!-- Comment — goes to post detail, focuses comment box -->
+        <a href="{{ url_for('post_detail', post_id=post.id) }}#comment-compose"
+           class="pa-btn" title="Comment">
+          <i class="far fa-comment-dots"></i>
+          <span>{{ post.comment_count or 0 }}</span>
+        </a>
+
+        <!-- Repost -->
+        <button class="pa-btn repost {% if post.user_reposted %}active{% endif %}"
+                data-post="{{ post.id }}" onclick="handleRepost(this)" title="Repost">
+          <i class="fas fa-retweet"></i>
+          <span class="rc">{{ post.repost_count or 0 }}</span>
+        </button>
+
+        <!-- Like -->
+        <button class="pa-btn like {% if post.user_liked %}active{% endif %}"
+                data-post="{{ post.id }}" onclick="handleLike(this)" title="Like">
+          <i class="{{ 'fas' if post.user_liked else 'far' }} fa-heart"></i>
+          <span class="lc">{{ post.like_count or 0 }}</span>
+        </button>
+
+        <!-- Quote -->
+        <button class="pa-btn" title="Quote post"
+                onclick="openComposeModal({{ post.id }},'{{ (post.content or '') | replace("'","&#39;") | truncate(60) }}')">
+          <i class="fas fa-quote-right"></i>
+        </button>
+
+        <!-- Views (links to post detail) -->
+        <a href="{{ url_for('post_detail', post_id=post.id) }}" class="pa-btn view-btn" title="View thread">
+          <i class="far fa-eye"></i>
+          <span>{{ post.view_count or 0 }}</span>
+        </a>
+
+        <!-- Bookmark -->
+        <button class="pa-btn bookmark {% if post.user_bookmarked %}active{% endif %}"
+                data-post="{{ post.id }}" onclick="handleBookmark(this)" title="Save"
+                style="margin-left:auto">
+          <i class="{{ 'fas' if post.user_bookmarked else 'far' }} fa-bookmark"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</article>
+{% endmacro %}
